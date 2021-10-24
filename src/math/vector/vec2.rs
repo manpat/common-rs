@@ -45,3 +45,13 @@ impl Rand for Vec2 {
 		Vec2::new(rng.gen(), rng.gen())
 	}
 }
+
+
+impl From<[f32; 2]> for Vec2 {
+	fn from([x, y]: [f32; 2]) -> Vec2 { Vec2{x, y} }
+}
+
+impl From<(f32, f32)> for Vec2 {
+	fn from((x, y): (f32, f32)) -> Vec2 { Vec2{x, y} }
+}
+

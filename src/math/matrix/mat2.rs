@@ -133,7 +133,7 @@ mod tests {
 	#[test]
 	fn test_inverse() {
 		let a = Mat2::new([1.0, 1.0, 0.0, 2.0]);
-		let i = Mat2::ident();
+		let i = Mat2::identity();
 
 		println!("A = {:?}", a);
 

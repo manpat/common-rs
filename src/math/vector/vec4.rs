@@ -39,3 +39,13 @@ impl Rand for Vec4 {
 		Vec4::new(rng.gen(), rng.gen(), rng.gen(), rng.gen())
 	}
 }
+
+
+impl From<[f32; 4]> for Vec4 {
+	fn from([x, y, z, w]: [f32; 4]) -> Vec4 { Vec4{x, y, z, w} }
+}
+
+impl From<(f32, f32, f32, f32)> for Vec4 {
+	fn from((x, y, z, w): (f32, f32, f32, f32)) -> Vec4 { Vec4{x, y, z, w} }
+}
+

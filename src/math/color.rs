@@ -88,27 +88,47 @@ impl Color {
 			self.a,
 		)
 	}
+
+	pub fn to_srgb(&self) -> Color {
+		Color::rgba(
+			linear_channel_to_srgb(self.r),
+			linear_channel_to_srgb(self.g),
+			linear_channel_to_srgb(self.b),
+			self.a,
+		)
+	}
+
+	pub fn to_linear(&self) -> Color {
+		Color::rgba(
+			srgb_channel_to_linear(self.r),
+			srgb_channel_to_linear(self.g),
+			srgb_channel_to_linear(self.b),
+			self.a,
+		)
+	}
 }
 
-impl From<&Vec3> for Color {
-	fn from(o: &Vec3) -> Color { Color::rgb(o.x, o.y, o.z) }
-}
-impl From<&Vec4> for Color {
-	fn from(o: &Vec4) -> Color { Color::rgba(o.x, o.y, o.z, o.w) }
-}
 
-impl From<Vec3> for Color {
-	fn from(o: Vec3) -> Color { Color::rgb(o.x, o.y, o.z) }
-}
-impl From<Vec4> for Color {
-	fn from(o: Vec4) -> Color { Color::rgba(o.x, o.y, o.z, o.w) }
-}
 
 impl From<(u8,u8,u8)> for Color {
 	fn from(o: (u8,u8,u8)) -> Color { Color::rgb8(o.0, o.1, o.2) }
 }
 impl From<(u8,u8,u8,u8)> for Color {
 	fn from(o: (u8,u8,u8,u8)) -> Color { Color::rgba8(o.0, o.1, o.2, o.3) }
+}
+
+impl From<[u8; 3]> for Color {
+	fn from([r, g, b]: [u8; 3]) -> Color { Color::rgb8(r, g, b) }
+}
+impl From<[u8; 4]> for Color {
+	fn from([r, g, b, a]: [u8; 4]) -> Color { Color::rgba8(r, g, b, a) }
+}
+
+impl From<[f32; 3]> for Color {
+	fn from([r, g, b]: [f32; 3]) -> Color { Color::rgb(r, g, b) }
+}
+impl From<[f32; 4]> for Color {
+	fn from([r, g, b, a]: [f32; 4]) -> Color { Color::rgba(r, g, b, a) }
 }
 
 impl From<Color> for Vec3 {
@@ -155,21 +175,34 @@ impl Ease<Color> for f32 {
 	impl_ease_for_color!(ease_bounce_inout);
 }
 
-// fn srgb_to_linear(color: Color) -> Color {
-// 	Color {
-// 		r: srgb_channel_to_linear(color.r),
-// 		g: srgb_channel_to_linear(color.g),
-// 		b: srgb_channel_to_linear(color.b),
-// 		a: color.a
-// 	}
-// }
 
 
-// fn srgb_channel_to_linear(value: f32) -> f32 {
-// 	// https://en.wikipedia.org/wiki/SRGB#From_sRGB_to_CIE_XYZ
-// 	if value <= 0.04045 {
-// 		value / 12.92
-// 	} else {
-// 		((value + 0.055) / 1.055).powf(2.4)
-// 	}
-// }
+fn srgb_channel_to_linear(value: f32) -> f32 {
+	// https://en.wikipedia.org/wiki/SRGB#From_sRGB_to_CIE_XYZ
+	if value <= 0.04045 {
+		value / 12.92
+	} else {
+		((value + 0.055) / 1.055).powf(2.4)
+	}
+}
+
+fn linear_channel_to_srgb(value: f32) -> f32 {
+	// https://en.wikipedia.org/wiki/SRGB#From_CIE_XYZ_to_sRGB
+	if value <= 0.0031308 {
+		value * 12.92
+	} else {
+		value.powf(1.0/2.4) * 1.055 - 0.055
+	}
+}
+
+
+
+
+#[test]
+fn test_srgb_conversion() {
+	let srgb_value = 0.5;
+	let linear_value = srgb_channel_to_linear(srgb_value);
+	let restored_value = linear_channel_to_srgb(linear_value);
+
+	assert!((srgb_value - restored_value).abs() < 0.00001);
+}
