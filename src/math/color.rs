@@ -108,8 +108,6 @@ impl Color {
 	}
 }
 
-
-
 impl From<(u8,u8,u8)> for Color {
 	fn from(o: (u8,u8,u8)) -> Color { Color::rgb8(o.0, o.1, o.2) }
 }
@@ -129,6 +127,14 @@ impl From<[f32; 3]> for Color {
 }
 impl From<[f32; 4]> for Color {
 	fn from([r, g, b, a]: [f32; 4]) -> Color { Color::rgba(r, g, b, a) }
+}
+
+
+impl From<Vec3> for Color {
+	fn from(o: Vec3) -> Color { Color::rgb(o.x, o.y, o.z) }
+}
+impl From<Vec4> for Color {
+	fn from(o: Vec4) -> Color { Color::rgba(o.x, o.y, o.z, o.w) }
 }
 
 impl From<Color> for Vec3 {
