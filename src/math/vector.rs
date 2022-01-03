@@ -161,6 +161,12 @@ macro_rules! bulk_impl_vector_ops {
 		impl_vector_bin_op!(ass $ty, MulAssign<$scalar>, mul_assign, *=, $($els),+);
 		impl_vector_bin_op!(ass $ty, DivAssign<$scalar>, div_assign, /=, $($els),+);
 
+		impl Default for $ty {
+			fn default() -> $ty {
+				$ty::zero()
+			}
+		}
+
 		impl Neg for $ty {
 			type Output = $ty;
 			fn neg(self) -> $ty {
