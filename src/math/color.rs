@@ -1,5 +1,5 @@
 use crate::math::vector::*;
-use crate::easing::Ease;
+use crate::math::Lerp;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
@@ -32,13 +32,12 @@ impl Color {
 	}
 
 	pub fn hsva(h: f32, s: f32, v: f32, a: f32) -> Color {
-		use crate::easing::Clamp;
 
 		let h = h % 360.0 - h.signum().min(0.0) * 360.0;
 		// if h < 0.0, add 360.0
 
-		let s = Clamp::clamp(&s, 0.0, 1.0);
-		let v = Clamp::clamp(&v, 0.0, 1.0);
+		let s = s.clamp(0.0, 1.0);
+		let v = v.clamp(0.0, 1.0);
 
 		let c = v * s;
 		let x = c * (1.0 - ((h / 60.0) % 2.0 - 1.0).abs());
@@ -144,41 +143,17 @@ impl From<Color> for Vec4 {
 	fn from(o: Color) -> Vec4 { o.to_vec4() }
 }
 
-macro_rules! impl_ease_for_color {
-	($func: ident) => (
-		fn $func(&self, start: Color, end: Color) -> Color {
-			Color {
-				r: self.$func(start.r, end.r),
-				g: self.$func(start.g, end.g),
-				b: self.$func(start.b, end.b),
-				a: self.$func(start.a, end.a),
-			}
+
+
+impl Lerp<Color> for f32 {
+	fn lerp(self, start: Color, end: Color) -> Color {
+		Color {
+			r: self.lerp(start.r, end.r),
+			g: self.lerp(start.g, end.g),
+			b: self.lerp(start.b, end.b),
+			a: self.lerp(start.a, end.a),
 		}
-	)
-}
-
-impl Ease<Color> for f32 {
-	impl_ease_for_color!(ease_linear);
-
-	impl_ease_for_color!(ease_quad_in);
-	impl_ease_for_color!(ease_quad_out);
-	impl_ease_for_color!(ease_quad_inout);
-
-	impl_ease_for_color!(ease_exp_in);
-	impl_ease_for_color!(ease_exp_out);
-	impl_ease_for_color!(ease_exp_inout);
-
-	impl_ease_for_color!(ease_elastic_in);
-	impl_ease_for_color!(ease_elastic_out);
-	impl_ease_for_color!(ease_elastic_inout);
-
-	impl_ease_for_color!(ease_back_in);
-	impl_ease_for_color!(ease_back_out);
-	impl_ease_for_color!(ease_back_inout);
-
-	impl_ease_for_color!(ease_bounce_in);
-	impl_ease_for_color!(ease_bounce_out);
-	impl_ease_for_color!(ease_bounce_inout);
+	}
 }
 
 

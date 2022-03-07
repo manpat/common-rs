@@ -1,7 +1,7 @@
 use std::ops::{Add, Mul};
 use crate::matrix::*;
 use crate::vector::*;
-use crate::easing::*;
+use crate::lerp::Lerp;
 use std::f32::consts::PI;
 
 #[derive(Copy, Clone, Debug)]
@@ -153,43 +153,20 @@ impl Mul<Vec3> for Quat {
 }
 
 
-macro_rules! impl_ease_for_quat {
-	($func: ident) => (
-		fn $func(&self, start: Quat, end: Quat) -> Quat {
-			Quat {
-				x: self.$func(start.x, end.x),
-				y: self.$func(start.y, end.y),
-				z: self.$func(start.z, end.z),
-				w: self.$func(start.w, end.w),
-			}
+
+// TODO(pat.m): slerp?
+impl Lerp<Quat> for f32 {
+	fn lerp(self, start: Quat, end: Quat) -> Quat {
+		Quat {
+			x: self.lerp(start.x, end.x),
+			y: self.lerp(start.y, end.y),
+			z: self.lerp(start.z, end.z),
+			w: self.lerp(start.w, end.w),
 		}
-	)
+	}
 }
 
 
-impl Ease<Quat> for f32 {
-	impl_ease_for_quat!(ease_linear);
-
-	impl_ease_for_quat!(ease_quad_in);
-	impl_ease_for_quat!(ease_quad_out);
-	impl_ease_for_quat!(ease_quad_inout);
-
-	impl_ease_for_quat!(ease_exp_in);
-	impl_ease_for_quat!(ease_exp_out);
-	impl_ease_for_quat!(ease_exp_inout);
-
-	impl_ease_for_quat!(ease_elastic_in);
-	impl_ease_for_quat!(ease_elastic_out);
-	impl_ease_for_quat!(ease_elastic_inout);
-
-	impl_ease_for_quat!(ease_back_in);
-	impl_ease_for_quat!(ease_back_out);
-	impl_ease_for_quat!(ease_back_inout);
-
-	impl_ease_for_quat!(ease_bounce_in);
-	impl_ease_for_quat!(ease_bounce_out);
-	impl_ease_for_quat!(ease_bounce_inout);
-}
 
 
 #[cfg(test)]

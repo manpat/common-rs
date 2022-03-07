@@ -1,7 +1,7 @@
 use std::ops::{Add, Sub, Mul, Div, Neg};
 use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign};
 use std::iter::{Sum, Product};
-use crate::easing::*;
+use crate::lerp::Lerp;
 
 pub mod vec2;
 pub mod vec3;
@@ -206,43 +206,18 @@ bulk_impl_vector_ops!(Vec4, f32, x, y, z, w);
 bulk_impl_vector_ops!(Vec2i, i32, x, y);
 bulk_impl_vector_ops!(Vec3i, i32, x, y, z);
 
-macro_rules! impl_ease_for_vec {
-	(fn $func: ident, $ty:ident, $($els:ident),+) => (
-		fn $func(&self, start: $ty, end: $ty) -> $ty {
-			$ty {
-				$($els: self.$func(start.$els, end.$els)),+
+macro_rules! impl_lerp_for_vec {
+	($ty:ident, $($els:ident),+) => (
+		impl Lerp<$ty> for f32 {
+			fn lerp(self, start: $ty, end: $ty) -> $ty {
+				$ty {
+					$($els: self.lerp(start.$els, end.$els)),+
+				}
 			}
 		}
 	);
-
-	($ty:ident, $($els:ident),+) => {
-		impl Ease<$ty> for f32 {
-			impl_ease_for_vec!(fn ease_linear, $ty, $($els),+);
-
-			impl_ease_for_vec!(fn ease_quad_in, $ty, $($els),+);
-			impl_ease_for_vec!(fn ease_quad_out, $ty, $($els),+);
-			impl_ease_for_vec!(fn ease_quad_inout, $ty, $($els),+);
-
-			impl_ease_for_vec!(fn ease_exp_in, $ty, $($els),+);
-			impl_ease_for_vec!(fn ease_exp_out, $ty, $($els),+);
-			impl_ease_for_vec!(fn ease_exp_inout, $ty, $($els),+);
-
-			impl_ease_for_vec!(fn ease_elastic_in, $ty, $($els),+);
-			impl_ease_for_vec!(fn ease_elastic_out, $ty, $($els),+);
-			impl_ease_for_vec!(fn ease_elastic_inout, $ty, $($els),+);
-
-			impl_ease_for_vec!(fn ease_back_in, $ty, $($els),+);
-			impl_ease_for_vec!(fn ease_back_out, $ty, $($els),+);
-			impl_ease_for_vec!(fn ease_back_inout, $ty, $($els),+);
-
-			impl_ease_for_vec!(fn ease_bounce_in, $ty, $($els),+);
-			impl_ease_for_vec!(fn ease_bounce_out, $ty, $($els),+);
-			impl_ease_for_vec!(fn ease_bounce_inout, $ty, $($els),+);
-		}
-	};
 }
 
-impl_ease_for_vec!(Vec2, x, y);
-impl_ease_for_vec!(Vec3, x, y, z);
-impl_ease_for_vec!(Vec4, x, y, z, w);
-
+impl_lerp_for_vec!(Vec2, x, y);
+impl_lerp_for_vec!(Vec3, x, y, z);
+impl_lerp_for_vec!(Vec4, x, y, z, w);

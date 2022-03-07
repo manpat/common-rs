@@ -52,6 +52,14 @@ impl Mat2x3 {
 		])
 	}
 
+	pub fn scale_rotate_translate(s: Vec2, ph: f32, t: Vec2) -> Mat2x3 {
+		let (rx, ry) = (ph.cos(), ph.sin());
+		Mat2x3::new([
+			s.x*rx, s.y*-ry, t.x,
+			s.x*ry, s.y* rx, t.y,
+		])
+	}
+
 	pub fn column_x(&self) -> Vec2 {
 		let [a,b] = &self.rows;
 		Vec2::new(a.x, b.x)
