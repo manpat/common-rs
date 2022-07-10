@@ -146,6 +146,16 @@ impl Mul<Vec2> for Mat2x3 {
 	}
 }
 
+impl Mul<Vec3> for Mat2x3 {
+	type Output = Vec2;
+	fn mul(self, o: Vec3) -> Vec2 {
+		Vec2::new(
+			self.rows[0].dot(o),
+			self.rows[1].dot(o),
+		)
+	}
+}
+
 impl Mul<f32> for Mat2x3 {
 	type Output = Mat2x3;
 	fn mul(self, o: f32) -> Mat2x3 {
