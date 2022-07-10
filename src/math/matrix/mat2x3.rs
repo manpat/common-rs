@@ -1,4 +1,5 @@
 use std::ops::Mul;
+use crate::matrix::{Mat3x4, Mat4};
 use crate::vector::*;
 
 #[repr(C)]
@@ -22,6 +23,21 @@ impl Mat2x3 {
 			a.x, b.x, c.x,
 			a.y, b.y, c.y,
 		])
+	}
+
+	pub fn to_mat3x4_xyw(&self) -> Mat3x4 {
+		let [x,y,w] = self.columns();
+		Mat3x4::from_columns([
+			x.extend(0.0),
+			y.extend(0.0),
+			Vec3::from_z(1.0),
+			w.extend(0.0)
+		])
+	}
+
+	pub fn to_mat4_xyw(&self) -> Mat4 {
+		self.to_mat3x4_xyw()
+			.to_mat4()
 	}
 
 	pub fn identity() -> Mat2x3 { Mat2x3::uniform_scale(1.0) }
