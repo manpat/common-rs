@@ -37,6 +37,11 @@ impl Vec2 {
 	pub fn normalize(self) -> Vec2 { self * (1.0/self.length()) }
 	pub fn dot(self, o: Vec2) -> f32 { self.x*o.x + self.y*o.y }
 	pub fn wedge(self, o: Vec2) -> f32 { self.x*o.y - self.y*o.x }
+
+	/// Swaps x and y elements.
+	pub fn transpose(self) -> Vec2 {
+		Vec2::new(self.y, self.x)
+	}
 }
 
 

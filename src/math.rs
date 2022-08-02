@@ -21,7 +21,6 @@ pub use quaternion::*;
 
 
 
-#[cfg(test)]
 #[macro_export]
 macro_rules! assert_vec_eq {
 	($a:expr, $b:expr) => {{
@@ -36,7 +35,6 @@ macro_rules! assert_vec_eq {
 }
 
 
-#[cfg(test)]
 #[macro_export]
 macro_rules! assert_almost_eq {
 	($a:expr, $b:expr) => {{
