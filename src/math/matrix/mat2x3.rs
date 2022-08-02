@@ -1,4 +1,5 @@
 use std::ops::Mul;
+use crate::matrix::{Mat3x4, Mat4};
 use crate::vector::*;
 
 #[repr(C)]
@@ -22,6 +23,21 @@ impl Mat2x3 {
 			a.x, b.x, c.x,
 			a.y, b.y, c.y,
 		])
+	}
+
+	pub fn to_mat3x4_xyw(&self) -> Mat3x4 {
+		let [x,y,w] = self.columns();
+		Mat3x4::from_columns([
+			x.extend(0.0),
+			y.extend(0.0),
+			Vec3::from_z(1.0),
+			w.extend(0.0)
+		])
+	}
+
+	pub fn to_mat4_xyw(&self) -> Mat4 {
+		self.to_mat3x4_xyw()
+			.to_mat4()
 	}
 
 	pub fn identity() -> Mat2x3 { Mat2x3::uniform_scale(1.0) }
@@ -123,6 +139,16 @@ impl Mul<Vec2> for Mat2x3 {
 	type Output = Vec2;
 	fn mul(self, o: Vec2) -> Vec2 {
 		let o = o.extend(1.0);
+		Vec2::new(
+			self.rows[0].dot(o),
+			self.rows[1].dot(o),
+		)
+	}
+}
+
+impl Mul<Vec3> for Mat2x3 {
+	type Output = Vec2;
+	fn mul(self, o: Vec3) -> Vec2 {
 		Vec2::new(
 			self.rows[0].dot(o),
 			self.rows[1].dot(o),
