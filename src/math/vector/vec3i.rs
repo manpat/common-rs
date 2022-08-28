@@ -1,9 +1,9 @@
 use crate::math::vector::Vec3;
-use rand::{Rand, Rng};
+use rand_derive2::RandGen;
 
 
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, RandGen)]
 pub struct Vec3i {
 	pub x: i32,
 	pub y: i32,
@@ -22,13 +22,6 @@ impl Vec3i {
 
 	pub fn length(self) -> f32 {
 		((self.x*self.x + self.y*self.y + self.z*self.z) as f32).sqrt()
-	}
-}
-
-
-impl Rand for Vec3i {
-	fn rand<R: Rng>(rng: &mut R) -> Self {
-		Vec3i::new(rng.gen(), rng.gen(), rng.gen())
 	}
 }
 

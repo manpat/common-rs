@@ -1,9 +1,9 @@
 use crate::math::vector::{Vec2, Vec4};
-use rand::{Rand, Rng};
+use rand_derive2::RandGen;
 
 
 #[repr(C)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, RandGen)]
 pub struct Vec3 {
 	pub x: f32,
 	pub y: f32,
@@ -42,14 +42,6 @@ impl Vec3 {
 		)
 	}
 }
-
-
-impl Rand for Vec3 {
-	fn rand<R: Rng>(rng: &mut R) -> Self {
-		Vec3::new(rng.gen(), rng.gen(), rng.gen())
-	}
-}
-
 
 impl From<[f32; 3]> for Vec3 {
 	fn from([x, y, z]: [f32; 3]) -> Vec3 { Vec3{x, y, z} }
