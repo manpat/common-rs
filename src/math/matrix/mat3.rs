@@ -53,6 +53,27 @@ impl Mat3 {
 		[self.column_x(), self.column_y(), self.column_z()]
 	}
 
+	pub fn set_column_x(&mut self, Vec3{x,y,z}: Vec3) {
+		let [a,b,c] = &mut self.rows;
+		a.x = x;
+		b.x = y;
+		c.x = z;
+	}
+
+	pub fn set_column_y(&mut self, Vec3{x,y,z}: Vec3) {
+		let [a,b,c] = &mut self.rows;
+		a.y = x;
+		b.y = y;
+		c.y = z;
+	}
+
+	pub fn set_column_z(&mut self, Vec3{x,y,z}: Vec3) {
+		let [a,b,c] = &mut self.rows;
+		a.z = x;
+		b.z = y;
+		c.z = z;
+	}
+
 	pub fn inverse(&self) -> Mat3 {
 		unimplemented!()
 	}
