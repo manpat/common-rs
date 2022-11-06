@@ -22,7 +22,11 @@ impl Vec2 {
 	pub const fn from_x(x: f32) -> Vec2 { Vec2::new(x, 0.0) }
 	pub const fn from_y(y: f32) -> Vec2 { Vec2::new(0.0, y) }
 
+	#[deprecated = "Use to_x0y instead. This name makes no sense."]
 	pub fn to_x0z(self) -> Vec3 { Vec3::new(self.x, 0.0, self.y) }
+
+	pub fn to_x0y(self) -> Vec3 { Vec3::new(self.x, 0.0, self.y) }
+
 	pub fn to_vec2i(self) -> Vec2i { Vec2i::new(self.x as i32, self.y as i32) }
 	pub fn to_tuple(self) -> (f32,f32) { (self.x, self.y) }
 	pub fn to_array(self) -> [f32; 2] { [self.x, self.y] }
