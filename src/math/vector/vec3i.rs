@@ -18,6 +18,7 @@ impl Vec3i {
 
 	pub fn from_tuple(t: (i32,i32,i32)) -> Vec3i { Vec3i::new(t.0, t.1, t.2) }
 	pub fn to_tuple(self) -> (i32,i32,i32) { (self.x, self.y, self.z) }
+	pub fn to_array(self) -> [i32; 3] { [self.x, self.y, self.z] }
 	pub fn to_vec3(self) -> Vec3 { Vec3::new(self.x as f32, self.y as f32, self.z as f32) }
 
 	pub fn length(self) -> f32 {

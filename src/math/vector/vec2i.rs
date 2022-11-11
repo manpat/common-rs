@@ -16,6 +16,7 @@ impl Vec2i {
 
 	pub fn from_tuple(t: (i32,i32)) -> Vec2i { Vec2i::new(t.0, t.1) }
 	pub fn to_tuple(self) -> (i32,i32) { (self.x, self.y) }
+	pub fn to_array(self) -> [i32; 2] { [self.x, self.y] }
 	pub fn to_vec2(self) -> Vec2 { Vec2::new(self.x as f32, self.y as f32) }
 
 	/// Swaps x and y elements.

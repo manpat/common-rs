@@ -26,6 +26,7 @@ impl Vec4 {
 	pub const fn from_w(w: f32) -> Vec4 { Vec4::new(0.0, 0.0, 0.0, w) }
 
 	pub fn to_tuple(&self) -> (f32,f32,f32,f32) { (self.x, self.y, self.z, self.w) }
+	pub fn to_array(&self) -> [f32; 4] { [self.x, self.y, self.z, self.w] }
 	pub fn to_vec3(&self) -> Vec3 { Vec3::new(self.x, self.y, self.z) }
 
 	pub fn length(&self) -> f32 { self.dot(*self).sqrt() }
