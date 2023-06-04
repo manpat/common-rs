@@ -3,7 +3,7 @@ use rand_derive2::RandGen;
 
 
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, RandGen)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, RandGen, Hash)]
 pub struct Vec2i {
 	pub x: i32,
 	pub y: i32,
