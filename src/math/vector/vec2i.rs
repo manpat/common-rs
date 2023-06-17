@@ -1,4 +1,4 @@
-use crate::math::vector::Vec2;
+use crate::math::vector::{Vec2, Vec3i};
 use rand_derive2::RandGen;
 
 
@@ -19,6 +19,8 @@ impl Vec2i {
 	pub fn to_array(self) -> [i32; 2] { [self.x, self.y] }
 	pub fn to_vec2(self) -> Vec2 { Vec2::new(self.x as f32, self.y as f32) }
 
+	pub fn extend(&self, z: i32) -> Vec3i { Vec3i::new(self.x, self.y, z) }
+
 	/// Swaps x and y elements.
 	pub fn transpose(self) -> Vec2i {
 		Vec2i::new(self.y, self.x)
@@ -26,6 +28,10 @@ impl Vec2i {
 
 	pub fn length(self) -> f32 {
 		((self.x*self.x + self.y*self.y) as f32).sqrt()
+	}
+
+	pub fn div_ceil(&self, rhs: Vec2i) -> Vec2i {
+		(rhs + *self - Vec2i::splat(1)) / rhs
 	}
 }
 

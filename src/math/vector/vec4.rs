@@ -1,4 +1,4 @@
-use crate::math::vector::Vec3;
+use crate::math::vector::{Vec2, Vec3};
 use rand_derive2::RandGen;
 
 
@@ -28,6 +28,10 @@ impl Vec4 {
 	pub fn to_tuple(&self) -> (f32,f32,f32,f32) { (self.x, self.y, self.z, self.w) }
 	pub fn to_array(&self) -> [f32; 4] { [self.x, self.y, self.z, self.w] }
 	pub fn to_vec3(&self) -> Vec3 { Vec3::new(self.x, self.y, self.z) }
+
+	pub fn to_xyz(&self) -> Vec3 { Vec3::new(self.x, self.y, self.z) }
+	pub fn to_xz(&self) -> Vec2 { Vec2::new(self.x, self.z) }
+	pub fn to_xy(&self) -> Vec2 { Vec2::new(self.x, self.y) }
 
 	pub fn length(&self) -> f32 { self.dot(*self).sqrt() }
 
