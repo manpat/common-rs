@@ -208,6 +208,13 @@ impl Lerp<Color> for f32 {
 }
 
 
+impl Default for Color {
+	fn default() -> Color {
+		Color::black()
+	}
+}
+
+
 
 fn srgb_channel_to_linear(value: f32) -> f32 {
 	// https://en.wikipedia.org/wiki/SRGB#From_sRGB_to_CIE_XYZ
