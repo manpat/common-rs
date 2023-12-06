@@ -3,6 +3,7 @@ use crate::vector::*;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Mat3{pub rows: [Vec3; 3]}
 
 impl Mat3 {

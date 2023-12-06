@@ -150,7 +150,7 @@ macro_rules! impl_vector_bin_op {
 }
 
 macro_rules! bulk_impl_vector_ops {
-	($ty:ident, $scalar:ty, $($els:ident),+) => {
+	($ty:ident, $scalar:ty, $size:expr, $($els:ident),+) => {
 		impl_vector_bin_op!($ty, Add<$scalar>, add, +, $($els),+);
 		impl_vector_bin_op!($ty, Sub<$scalar>, sub, -, $($els),+);
 		impl_vector_bin_op!($ty, Mul<$scalar>, mul, *, $($els),+);
@@ -197,14 +197,33 @@ macro_rules! bulk_impl_vector_ops {
 				iter.fold($ty::splat(1 as $scalar), |a, &v| a * v)
 			}
 		}
+		
+		#[cfg(feature = "serde")]
+		impl serde::Serialize for $ty {
+			fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+				where S: serde::Serializer
+			{
+				[$(self.$els),+].serialize(serializer)
+			}
+		}
+
+		#[cfg(feature = "serde")]
+		impl<'de> serde::Deserialize<'de> for $ty {
+			fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+				where D: serde::Deserializer<'de>
+			{
+				<[$scalar; $size]>::deserialize(deserializer)
+					.map($ty::from)
+			}
+		}
 	};
 }
 
-bulk_impl_vector_ops!(Vec2, f32, x, y);
-bulk_impl_vector_ops!(Vec3, f32, x, y, z);
-bulk_impl_vector_ops!(Vec4, f32, x, y, z, w);
-bulk_impl_vector_ops!(Vec2i, i32, x, y);
-bulk_impl_vector_ops!(Vec3i, i32, x, y, z);
+bulk_impl_vector_ops!(Vec2, f32, 2, x, y);
+bulk_impl_vector_ops!(Vec3, f32, 3, x, y, z);
+bulk_impl_vector_ops!(Vec4, f32, 4, x, y, z, w);
+bulk_impl_vector_ops!(Vec2i, i32, 2, x, y);
+bulk_impl_vector_ops!(Vec3i, i32, 3, x, y, z);
 
 macro_rules! impl_lerp_for_vec {
 	($ty:ident, $($els:ident),+) => (

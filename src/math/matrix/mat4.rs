@@ -4,6 +4,7 @@ use crate::matrix::Mat3x4;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Mat4 {
 	pub rows: [Vec4; 4]
 }

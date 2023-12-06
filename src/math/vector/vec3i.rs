@@ -15,6 +15,7 @@ impl Vec3i {
 	pub const fn new(x: i32, y: i32, z: i32) -> Vec3i { Vec3i{x, y, z} }
 	pub const fn splat(x: i32) -> Vec3i { Vec3i::new(x, x, x) }
 	pub const fn zero() -> Vec3i { Vec3i::splat(0) }
+	pub const fn one() -> Vec3i { Vec3i::splat(1) }
 
 	pub fn from_tuple(t: (i32,i32,i32)) -> Vec3i { Vec3i::new(t.0, t.1, t.2) }
 	pub fn to_tuple(self) -> (i32,i32,i32) { (self.x, self.y, self.z) }

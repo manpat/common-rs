@@ -14,6 +14,8 @@ impl Vec3 {
 	pub const fn new(x: f32, y: f32, z: f32) -> Vec3 { Vec3{x, y, z} }
 	pub const fn splat(x: f32) -> Vec3 { Vec3::new(x, x, x) }
 	pub const fn zero() -> Vec3 { Vec3::splat(0.0) }
+	pub const fn one() -> Vec3 { Vec3::splat(1.0) }
+
 	pub fn from_x_angle(th: f32) -> Vec3 { Vec3::new(0.0, th.sin(), th.cos()) }
 	pub fn from_y_angle(th: f32) -> Vec3 { Vec3::new(th.cos(), 0.0, th.sin()) }
 	pub fn from_slice(o: &[f32]) -> Vec3 {

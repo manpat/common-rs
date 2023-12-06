@@ -2,17 +2,24 @@ use crate::math::vector::Vec2;
 
 /// A Closed 2D Range - that is min and max count as being inside the bounds of the Aabb2
 #[derive(Debug, Copy, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Aabb2 {
 	pub min: Vec2,
 	pub max: Vec2,
 }
 
+/// Constructors
 impl Aabb2 {
 	pub fn new(min: Vec2, max: Vec2) -> Aabb2 {
 		Aabb2 { min, max }
 	}
 
+	#[deprecated="Use Aabb2::empty instead"]
 	pub fn new_empty() -> Aabb2 {
+		Self::empty()
+	}
+
+	pub fn empty() -> Aabb2 {
 		Aabb2::new(
 			Vec2::splat(f32::INFINITY),
 			Vec2::splat(-f32::INFINITY)
@@ -22,14 +29,57 @@ impl Aabb2 {
 	pub fn around_point(center: Vec2, extents: Vec2) -> Aabb2 {
 		Aabb2::new(center - extents, center + extents)
 	}
+}
 
+/// Properties
+impl Aabb2 {
 	pub fn is_empty(&self) -> bool {
-		self.min.x >= self.max.x
-		|| self.min.y >= self.max.y
+		self.min.x > self.max.x
+		|| self.min.y > self.max.y
 	}
 
+	pub fn center(&self) -> Vec2 {
+		(self.min + self.max) / 2.0
+	}
+
+	pub fn size(&self) -> Vec2 {
+		if self.is_empty() {
+			Vec2::zero()
+		} else {
+			self.max - self.min
+		}
+	}
+
+	pub fn extents(&self) -> Vec2 {
+		self.size() / 2.0
+	}
+
+	pub fn aspect(&self) -> f32 {
+		let Vec2{x, y} = self.size();
+		x / y.max(0.0001)
+	}
+}
+
+
+/// Queries
+impl Aabb2 {
 	pub fn contains_point(&self, point: Vec2) -> bool {
 		self.min.x <= point.x && point.x <= self.max.x
 		&& self.min.y <= point.y && point.y <= self.max.y
 	}
 }
+
+/// Modifications
+impl Aabb2 {
+	pub fn grow(&self, amount: Vec2) -> Self {
+		Aabb2 {
+			min: self.min - amount,
+			max: self.max + amount,
+		}
+	}
+
+	pub fn shrink(&self, amount: Vec2) -> Self {
+		self.grow(-amount)
+	}
+}
+

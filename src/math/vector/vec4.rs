@@ -15,6 +15,8 @@ impl Vec4 {
 	pub const fn new(x: f32, y: f32, z: f32, w: f32) -> Vec4 { Vec4{x, y, z, w} }
 	pub const fn splat(x: f32) -> Vec4 { Vec4::new(x, x, x, x) }
 	pub const fn zero() -> Vec4 { Vec4::splat(0.0) }
+	pub const fn one() -> Vec4 { Vec4::splat(1.0) }
+
 	pub fn from_slice(o: &[f32]) -> Vec4 {
 		assert!(o.len() >= 4);
 		Vec4::new(o[0], o[1], o[2], o[3])

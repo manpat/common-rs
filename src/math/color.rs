@@ -3,6 +3,7 @@ use crate::math::Lerp;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Color {
 	pub r: f32,
 	pub g: f32,
@@ -32,7 +33,6 @@ impl Color {
 	}
 
 	pub fn hsva(h: f32, s: f32, v: f32, a: f32) -> Color {
-
 		let h = h % 360.0 - h.signum().min(0.0) * 360.0;
 		// if h < 0.0, add 360.0
 
@@ -65,6 +65,22 @@ impl Color {
 	pub const fn grey_a(v: f32, a: f32) -> Color { Color::rgba(v, v, v, a) }
 	pub const fn white() -> Color { Color::grey(1.0) }
 	pub const fn black() -> Color { Color::grey(0.0) }
+
+	pub const fn red() -> Color { Color::rgb(1.0, 0.0, 0.0) }
+	pub const fn green() -> Color { Color::rgb(0.0, 1.0, 0.0) }
+	pub const fn blue() -> Color { Color::rgb(0.0, 0.0, 1.0) }
+
+	pub const fn yellow() -> Color { Color::rgb(1.0, 1.0, 0.0) }
+	pub const fn cyan() -> Color { Color::rgb(0.0, 1.0, 1.0) }
+	pub const fn magenta() -> Color { Color::rgb(1.0, 0.0, 1.0) }
+
+	pub const fn light_red() -> Color { Color::rgb(1.0, 0.5, 0.5) }
+	pub const fn light_green() -> Color { Color::rgb(0.5, 1.0, 0.5) }
+	pub const fn light_blue() -> Color { Color::rgb(0.5, 0.5, 1.0) }
+
+	pub const fn light_yellow() -> Color { Color::rgb(1.0, 1.0, 0.5) }
+	pub const fn light_cyan() -> Color { Color::rgb(0.5, 1.0, 1.0) }
+	pub const fn light_magenta() -> Color { Color::rgb(1.0, 0.5, 1.0) }
 
 	pub fn to_byte_tuple(&self) -> (u8, u8, u8, u8) {
 		let Color{r,g,b,a} = *self;

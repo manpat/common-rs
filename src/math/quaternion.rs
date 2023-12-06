@@ -167,6 +167,24 @@ impl Lerp<Quat> for f32 {
 }
 
 
+#[cfg(feature = "serde")]
+impl serde::Serialize for Quat {
+	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+		where S: serde::Serializer
+	{
+		[self.x, self.y, self.z, self.w].serialize(serializer)
+	}
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for Quat {
+	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+		where D: serde::Deserializer<'de>
+	{
+		<[f32; 4]>::deserialize(deserializer)
+			.map(|[x, y, z, w]| Quat::from_raw(x, y, z, w))
+	}
+}
 
 
 #[cfg(test)]
