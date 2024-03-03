@@ -44,3 +44,13 @@ impl From<[i32; 2]> for Vec2i {
 impl From<(i32, i32)> for Vec2i {
 	fn from((x, y): (i32, i32)) -> Vec2i { Vec2i{x, y} }
 }
+
+
+impl From<Vec2i> for [i32; 2] {
+	fn from(o: Vec2i) -> [i32; 2] { o.to_array() }
+}
+
+impl From<Vec2i> for (i32, i32) {
+	fn from(o: Vec2i) -> (i32, i32) { o.to_tuple() }
+}
+
