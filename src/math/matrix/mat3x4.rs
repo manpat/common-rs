@@ -183,6 +183,12 @@ impl Mat3x4 {
 }
 
 
+impl Default for Mat3x4 {
+	fn default() -> Self {
+		Self::identity()
+	}
+}
+
 impl Mul<Mat3x4> for Mat3x4 {
 	type Output = Mat3x4;
 	fn mul(self, o: Mat3x4) -> Mat3x4 {

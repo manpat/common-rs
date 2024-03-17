@@ -136,6 +136,12 @@ impl Mul<Mat2x3> for Mat2x3 {
 	}
 }
 
+impl Default for Mat2x3 {
+	fn default() -> Self {
+		Self::identity()
+	}
+}
+
 impl Mul<Vec2> for Mat2x3 {
 	type Output = Vec2;
 	fn mul(self, o: Vec2) -> Vec2 {

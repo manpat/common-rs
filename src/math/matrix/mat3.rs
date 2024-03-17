@@ -80,6 +80,11 @@ impl Mat3 {
 	}
 }
 
+impl Default for Mat3 {
+	fn default() -> Self {
+		Self::identity()
+	}
+}
 
 impl Mul<Mat3> for Mat3 {
 	type Output = Mat3;
