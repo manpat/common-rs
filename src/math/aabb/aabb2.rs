@@ -58,6 +58,20 @@ impl Aabb2 {
 		let Vec2{x, y} = self.size();
 		x / y.max(0.0001)
 	}
+
+	pub fn min_max_corner(&self) -> Vec2 {
+		Vec2 {
+			x: self.min.x,
+			y: self.max.y,
+		}
+	}
+
+	pub fn max_min_corner(&self) -> Vec2 {
+		Vec2 {
+			x: self.max.x,
+			y: self.min.y,
+		}
+	}
 }
 
 
@@ -82,4 +96,6 @@ impl Aabb2 {
 		self.grow(-amount)
 	}
 }
+
+
 

@@ -20,6 +20,15 @@ impl Vec2 {
 		Vec2::new(o[0], o[1])
 	}
 
+	pub fn from_aspect(aspect: f32) -> Vec2 {
+		let aspect = aspect.max(0.001);
+		if aspect > 1.0 {
+			Vec2::new(aspect, 1.0)
+		} else {
+			Vec2::new(1.0, 1.0/aspect)
+		}
+	}
+
 	pub const fn from_x(x: f32) -> Vec2 { Vec2::new(x, 0.0) }
 	pub const fn from_y(y: f32) -> Vec2 { Vec2::new(0.0, y) }
 
