@@ -26,6 +26,10 @@ impl Aabb2 {
 		)
 	}
 
+	pub fn point(center: Vec2) -> Aabb2 {
+		Aabb2::new(center, center)
+	}
+
 	pub fn around_point(center: Vec2, extents: Vec2) -> Aabb2 {
 		Aabb2::new(center - extents, center + extents)
 	}
@@ -94,6 +98,13 @@ impl Aabb2 {
 
 	pub fn shrink(&self, amount: Vec2) -> Self {
 		self.grow(-amount)
+	}
+
+	pub fn translate(&self, amount: Vec2) -> Self {
+		Aabb2 {
+			min: self.min + amount,
+			max: self.max + amount,
+		}
 	}
 }
 
