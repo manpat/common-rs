@@ -26,6 +26,10 @@ impl Aabb2 {
 		)
 	}
 
+	pub fn zero() -> Aabb2 {
+		Aabb2::point(Vec2::zero())
+	}
+
 	pub fn point(center: Vec2) -> Aabb2 {
 		Aabb2::new(center, center)
 	}
@@ -104,6 +108,13 @@ impl Aabb2 {
 		Aabb2 {
 			min: self.min + amount,
 			max: self.max + amount,
+		}
+	}
+
+	pub fn expand_to_include_rect(&self, other: Aabb2) -> Self {
+		Aabb2 {
+			min: Vec2::new(self.min.x.min(other.min.x), self.min.y.min(other.min.y)),
+			max: Vec2::new(self.max.x.max(other.max.x), self.max.y.max(other.max.y)),
 		}
 	}
 }
