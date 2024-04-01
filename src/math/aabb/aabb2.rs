@@ -58,6 +58,14 @@ impl Aabb2 {
 		}
 	}
 
+	pub fn width(&self) -> f32 {
+		self.size().x
+	}
+
+	pub fn height(&self) -> f32 {
+		self.size().y
+	}
+
 	pub fn extents(&self) -> Vec2 {
 		self.size() / 2.0
 	}
