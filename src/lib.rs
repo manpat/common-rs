@@ -1,4 +1,4 @@
-#![feature(generators, generator_trait)]
+#![feature(coroutines, coroutine_trait)]
 #![feature(const_fn_floating_point_arithmetic)]
 
 pub mod ordified;
