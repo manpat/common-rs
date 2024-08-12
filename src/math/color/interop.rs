@@ -2,7 +2,6 @@ use super::*;
 
 use cint::{PremultipliedAlpha, Alpha, LinearSrgb, EncodedSrgb, ColorType, ColorInterop};
 
-
 impl ColorInterop for Color {
 	type CintTy = Alpha<LinearSrgb<f32>>;
 }
@@ -65,5 +64,34 @@ impl<T> From<PremultipliedAlpha<T>> for Color
 		} else {
 			Self::from([0.0, 0.0, 0.0, a])
 		}
+	}
+}
+
+// mint interop
+impl mint::IntoMint for Color {
+	type MintType = mint::Vector4<f32>;
+}
+
+impl From<mint::Vector4<f32>> for Color {
+	fn from(mint::Vector4{x, y, z, w}: mint::Vector4<f32>) -> Color {
+		Color::rgba(x, y, z, w)
+	}
+}
+
+impl From<mint::Vector3<f32>> for Color {
+	fn from(mint::Vector3{x, y, z}: mint::Vector3<f32>) -> Color {
+		Color::rgb(x, y, z)
+	}
+}
+
+impl From<Color> for mint::Vector4<f32> {
+	fn from(o: Color) -> Self {
+		Self::from(<[f32; 4]>::from(o))
+	}
+}
+
+impl From<Color> for mint::Vector3<f32> {
+	fn from(o: Color) -> Self {
+		Self::from(<[f32; 3]>::from(o))
 	}
 }

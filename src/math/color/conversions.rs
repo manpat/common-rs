@@ -83,16 +83,16 @@ impl From<Color> for (u8,u8,u8,u8) {
 
 impl AsRef<[f32; 3]> for Color {
 	fn as_ref(&self) -> &[f32; 3] {
-		/// SAFETY: #[repr(C)] guarantees that Color is laid out the same way as [f32; 4],
-		/// which contains [f32; 3] as an initial sequence.
+		// SAFETY: #[repr(C)] guarantees that Color is laid out the same way as [f32; 4],
+		// which contains [f32; 3] as an initial sequence.
 		unsafe { std::mem::transmute(self) }
 	}
 }
 
 impl AsMut<[f32; 3]> for Color {
 	fn as_mut(&mut self) -> &mut [f32; 3] {
-		/// SAFETY: #[repr(C)] guarantees that Color is laid out the same way as [f32; 4],
-		/// which contains [f32; 3] as an initial sequence.
+		// SAFETY: #[repr(C)] guarantees that Color is laid out the same way as [f32; 4],
+		// which contains [f32; 3] as an initial sequence.
 		unsafe { std::mem::transmute(self) }
 	}
 }
@@ -100,14 +100,14 @@ impl AsMut<[f32; 3]> for Color {
 
 impl AsRef<[f32; 4]> for Color {
 	fn as_ref(&self) -> &[f32; 4] {
-		/// SAFETY: #[repr(C)] guarantees that Color is laid out the same way as [f32; 4]
+		// SAFETY: #[repr(C)] guarantees that Color is laid out the same way as [f32; 4]
 		unsafe { std::mem::transmute(self) }
 	}
 }
 
 impl AsMut<[f32; 4]> for Color {
 	fn as_mut(&mut self) -> &mut [f32; 4] {
-		/// SAFETY: #[repr(C)] guarantees that Color is laid out the same way as [f32; 4]
+		// SAFETY: #[repr(C)] guarantees that Color is laid out the same way as [f32; 4]
 		unsafe { std::mem::transmute(self) }
 	}
 }

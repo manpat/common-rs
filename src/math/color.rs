@@ -4,7 +4,7 @@ use crate::math::Lerp;
 pub mod conversions;
 
 #[cfg(feature = "interop")]
-pub mod cint_interop;
+pub mod interop;
 
 
 
