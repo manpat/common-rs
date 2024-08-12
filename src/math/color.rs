@@ -80,6 +80,7 @@ impl Color {
 	pub const fn grey_a(v: f32, a: f32) -> Color { Color::rgba(v, v, v, a) }
 	pub const fn white() -> Color { Color::grey(1.0) }
 	pub const fn black() -> Color { Color::grey(0.0) }
+	pub const fn transparent() -> Color { Color::grey_a(0.0, 0.0) }
 
 	pub const fn red() -> Color { Color::rgb(1.0, 0.0, 0.0) }
 	pub const fn green() -> Color { Color::rgb(0.0, 1.0, 0.0) }
@@ -142,6 +143,21 @@ impl Color {
 			srgb_channel_to_linear(self.b),
 			self.a,
 		)
+	}
+
+	pub fn to_premultiplied(&self) -> Color {
+		let Color{r, g, b, a} = *self;
+		Color::rgba(r*a, g*a, b*a, a)
+	}
+
+	pub fn to_unmultiplied(&self) -> Color {
+		let Color{r, g, b, a} = *self;
+
+		if a > 0.0 {
+			Color::rgba(r/a, g/a, b/a, a)
+		} else {
+			Color::transparent()
+		}
 	}
 }
 

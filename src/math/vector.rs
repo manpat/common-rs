@@ -67,7 +67,7 @@ macro_rules! repeat_for_each {
 }
 
 macro_rules! bulk_impl_vector_ops {
-	($ty:ident, $scalar:ty, $size:expr, $($els:ident),+) => {
+	($ty:ident { $($els:ident),+ } => [ $scalar:ty ; $size:expr ]) => {
 		impl_vector_bin_op!($ty, Add<$scalar>, add, +, $($els),+);
 		impl_vector_bin_op!($ty, Sub<$scalar>, sub, -, $($els),+);
 		impl_vector_bin_op!($ty, Mul<$scalar>, mul, *, $($els),+);
@@ -160,6 +160,19 @@ macro_rules! bulk_impl_vector_ops {
 			}
 		}
 
+		// Array compatible conversions
+		impl $ty {
+			pub fn to_compatible<T>(&self) -> T
+				where T: From<[$scalar; $size]>
+			{
+				<[$scalar; $size]>::from(*self).into()
+			}
+
+			pub fn from_compatible(o: impl Into<[$scalar; $size]>) -> Self {
+				o.into().into()
+			}
+		}
+
 		// Reference conversions
 		impl AsRef<[$scalar; $size]> for $ty {
 			fn as_ref(&self) -> &[$scalar; $size] {
@@ -177,11 +190,11 @@ macro_rules! bulk_impl_vector_ops {
 	};
 }
 
-bulk_impl_vector_ops!(Vec2, f32, 2, x, y);
-bulk_impl_vector_ops!(Vec3, f32, 3, x, y, z);
-bulk_impl_vector_ops!(Vec4, f32, 4, x, y, z, w);
-bulk_impl_vector_ops!(Vec2i, i32, 2, x, y);
-bulk_impl_vector_ops!(Vec3i, i32, 3, x, y, z);
+bulk_impl_vector_ops!(Vec2 { x, y }       => [f32; 2]);
+bulk_impl_vector_ops!(Vec3 { x, y, z }    => [f32; 3]);
+bulk_impl_vector_ops!(Vec4 { x, y, z, w } => [f32; 4]);
+bulk_impl_vector_ops!(Vec2i { x, y }      => [i32; 2]);
+bulk_impl_vector_ops!(Vec3i { x, y, z }   => [i32; 3]);
 
 macro_rules! impl_lerp_for_vec {
 	($ty:ident, $($els:ident),+) => (
@@ -201,13 +214,23 @@ impl_lerp_for_vec!(Vec4, x, y, z, w);
 
 
 // mint interop
-macro_rules! impl_mint_interop {
-	($ty:ty, $mint_ty:ty, $array:ty) => {
+macro_rules! impl_mint_intomint {
+	($ty:ty, $mint_ty:ty) => {
 		#[cfg(feature="interop")]
 		impl mint::IntoMint for $ty {
 			type MintType = $mint_ty;
 		}
 
+		#[cfg(feature="interop")]
+		impl $ty {
+			pub fn from_mint(o: impl Into<$mint_ty>) -> $ty { o.into().into() }
+			pub fn to_mint(self) -> $mint_ty { self.into() }
+		}
+	}
+}
+
+macro_rules! impl_mint_interop {
+	($ty:ty, $mint_ty:ty, $array:ty) => {
 		#[cfg(feature="interop")]
 		impl From<$mint_ty> for $ty {
 			fn from(o: $mint_ty) -> Self {
@@ -224,8 +247,19 @@ macro_rules! impl_mint_interop {
 	}
 }
 
+impl_mint_intomint!(Vec2, mint::Vector2<f32>);
+impl_mint_intomint!(Vec3, mint::Vector3<f32>);
+impl_mint_intomint!(Vec4, mint::Vector4<f32>);
+impl_mint_intomint!(Vec2i, mint::Vector2<i32>);
+impl_mint_intomint!(Vec3i, mint::Vector3<i32>);
+
 impl_mint_interop!(Vec2, mint::Vector2<f32>, [f32; 2]);
 impl_mint_interop!(Vec3, mint::Vector3<f32>, [f32; 3]);
 impl_mint_interop!(Vec4, mint::Vector4<f32>, [f32; 4]);
 impl_mint_interop!(Vec2i, mint::Vector2<i32>, [i32; 2]);
 impl_mint_interop!(Vec3i, mint::Vector3<i32>, [i32; 3]);
+
+impl_mint_interop!(Vec2, mint::Point2<f32>, [f32; 2]);
+impl_mint_interop!(Vec3, mint::Point3<f32>, [f32; 3]);
+impl_mint_interop!(Vec2i, mint::Point2<i32>, [i32; 2]);
+impl_mint_interop!(Vec3i, mint::Point3<i32>, [i32; 3]);

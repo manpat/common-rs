@@ -1,6 +1,6 @@
 use super::*;
 
-use cint::{PremultipliedAlpha, Alpha, LinearSrgb, EncodedSrgb, ColorType, ColorInterop};
+use cint::{PremultipliedAlpha, Alpha, LinearSrgb, EncodedSrgb, ColorInterop};
 
 impl ColorInterop for Color {
 	type CintTy = Alpha<LinearSrgb<f32>>;
@@ -12,7 +12,14 @@ impl From<Alpha<LinearSrgb<f32>>> for Color {
 }
 
 impl From<Alpha<EncodedSrgb<u8>>> for Color {
-	fn from(o: Alpha<EncodedSrgb<u8>>) -> Color { Color::from(*o.as_ref()) }
+	fn from(o: Alpha<EncodedSrgb<u8>>) -> Color { Color::from(*o.as_ref()).to_linear() }
+}
+impl From<PremultipliedAlpha<LinearSrgb<f32>>> for Color {
+	fn from(o: PremultipliedAlpha<LinearSrgb<f32>>) -> Color { Color::from(*o.as_ref()).to_unmultiplied() }
+}
+
+impl From<PremultipliedAlpha<EncodedSrgb<u8>>> for Color {
+	fn from(o: PremultipliedAlpha<EncodedSrgb<u8>>) -> Color { Color::from(*o.as_ref()).to_unmultiplied().to_linear() }
 }
 
 impl From<LinearSrgb<f32>> for Color {
@@ -20,7 +27,7 @@ impl From<LinearSrgb<f32>> for Color {
 }
 
 impl From<EncodedSrgb<u8>> for Color {
-	fn from(o: EncodedSrgb<u8>) -> Color { Color::from(*o.as_ref()) }
+	fn from(o: EncodedSrgb<u8>) -> Color { Color::from(*o.as_ref()).to_linear() }
 }
 
 
@@ -30,7 +37,15 @@ impl From<Color> for Alpha<LinearSrgb<f32>> {
 }
 
 impl From<Color> for Alpha<EncodedSrgb<u8>> {
-	fn from(o: Color) -> Self { o.to_byte_array().into() }
+	fn from(o: Color) -> Self { o.to_srgb().to_byte_array().into() }
+}
+
+impl From<Color> for PremultipliedAlpha<LinearSrgb<f32>> {
+	fn from(o: Color) -> Self { o.to_premultiplied().to_array().into() }
+}
+
+impl From<Color> for PremultipliedAlpha<EncodedSrgb<u8>> {
+	fn from(o: Color) -> Self { o.to_srgb().to_premultiplied().to_byte_array().into() }
 }
 
 impl From<Color> for LinearSrgb<f32> {
@@ -38,34 +53,9 @@ impl From<Color> for LinearSrgb<f32> {
 }
 
 impl From<Color> for EncodedSrgb<u8> {
-	fn from(o: Color) -> Self { <[u8; 3]>::from(o).into() }
+	fn from(o: Color) -> Self { <[u8; 3]>::from(o.to_srgb()).into() }
 }
 
-
-// Deal with premultiplied alpha conversions
-impl<T> From<Color> for PremultipliedAlpha<T>
-	where PremultipliedAlpha<T>: From<[f32; 4]>
-		, T: ColorType
-{
-	fn from(Color{r, g, b, a}: Color) -> Self {
-		Self::from([r*a, b*a, g*a, a])
-	}
-}
-
-impl<T> From<PremultipliedAlpha<T>> for Color
-	where PremultipliedAlpha<T>: Into<[f32; 4]>
-		, T: ColorType
-{
-	fn from(o: PremultipliedAlpha<T>) -> Self {
-		let [r, g, b, a] = o.into();
-
-		if a > 0.0 {
-			Self::from([r/a, b/a, g/a, a])
-		} else {
-			Self::from([0.0, 0.0, 0.0, a])
-		}
-	}
-}
 
 // mint interop
 impl mint::IntoMint for Color {
