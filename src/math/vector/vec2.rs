@@ -62,22 +62,3 @@ impl Vec2 {
 		Vec2::new(self.y, self.x)
 	}
 }
-
-impl From<[f32; 2]> for Vec2 {
-	fn from([x, y]: [f32; 2]) -> Vec2 { Vec2{x, y} }
-}
-
-impl From<(f32, f32)> for Vec2 {
-	fn from((x, y): (f32, f32)) -> Vec2 { Vec2{x, y} }
-}
-
-
-
-impl From<Vec2> for [f32; 2] {
-	fn from(o: Vec2) -> [f32; 2] { o.to_array() }
-}
-
-impl From<Vec2> for (f32, f32) {
-	fn from(o: Vec2) -> (f32, f32) { o.to_tuple() }
-}
-

@@ -45,21 +45,3 @@ impl Vec3 {
 		)
 	}
 }
-
-impl From<[f32; 3]> for Vec3 {
-	fn from([x, y, z]: [f32; 3]) -> Vec3 { Vec3{x, y, z} }
-}
-
-impl From<(f32, f32, f32)> for Vec3 {
-	fn from((x, y, z): (f32, f32, f32)) -> Vec3 { Vec3{x, y, z} }
-}
-
-
-impl From<Vec3> for [f32; 3] {
-	fn from(o: Vec3) -> [f32; 3] { o.to_array() }
-}
-
-impl From<Vec3> for (f32, f32, f32) {
-	fn from(o: Vec3) -> (f32, f32, f32) { o.to_tuple() }
-}
-

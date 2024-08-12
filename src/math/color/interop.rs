@@ -73,14 +73,14 @@ impl mint::IntoMint for Color {
 }
 
 impl From<mint::Vector4<f32>> for Color {
-	fn from(mint::Vector4{x, y, z, w}: mint::Vector4<f32>) -> Color {
-		Color::rgba(x, y, z, w)
+	fn from(o: mint::Vector4<f32>) -> Self {
+		Self::from_slice(o.as_ref())
 	}
 }
 
 impl From<mint::Vector3<f32>> for Color {
-	fn from(mint::Vector3{x, y, z}: mint::Vector3<f32>) -> Color {
-		Color::rgb(x, y, z)
+	fn from(o: mint::Vector3<f32>) -> Self {
+		Self::from_slice(o.as_ref())
 	}
 }
 

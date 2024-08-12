@@ -9,102 +9,14 @@ pub mod vec4;
 pub mod vec2i;
 pub mod vec3i;
 
+pub mod map;
+
 pub use vec2::*;
 pub use vec3::*;
 pub use vec4::*;
 pub use vec2i::*;
 pub use vec3i::*;
 
-
-#[macro_export]
-macro_rules! internal_vec_map {
-	(@apply ($v:expr, $el:tt), @[$($body:tt)*] element $($tail:tt)* ) => {
-		internal_vec_map!(@apply ($v, $el), @[$($body)* $v.$el] $($tail)*)
-	};
-
-	(@apply ($v:expr, $el:tt), @[$($body:tt)*] $name:ident.element $($tail:tt)* ) => {
-		internal_vec_map!(@apply ($v, $el), @[$($body)* $name.$el] $($tail)*)
-	};
-
-	(@apply ($v:expr, $el:tt), @[$($body:tt)*] ( $($subexpr:tt)+ ) $($tail:tt)* ) => {
-		internal_vec_map!(@apply ($v, $el), @[
-			$($body)*
-			( internal_vec_map!(@apply ($v, $el), @[] $($subexpr)+) )
-		] $($tail)*)
-	};
-
-	(@apply ($v:expr, $el:tt), @[$($body:tt)*] { $($subexpr:tt)+ } $($tail:tt)* ) => {
-		internal_vec_map!(@apply ($v, $el), @[
-			$($body)*
-			{ internal_vec_map!(@apply ($v, $el), @[] $($subexpr)+) }
-		] $($tail)*)
-	};
-
-	(@apply ($v:expr, $el:tt), @[$($body:tt)*] $next:tt $($tail:tt)* ) => {
-		internal_vec_map!(@apply ($v, $el), @[$($body)* $next] $($tail)*)
-	};
-
-	(@apply ($v:expr, $el:tt), @[$($body:tt)*]) => { $($body)* };
-
-	(Vec2 $v:expr, $($func:tt)+) => {{
-		let v = $v;
-		Vec2 {
-			x: internal_vec_map!(@apply (v, x), @[] $($func)+),
-			y: internal_vec_map!(@apply (v, y), @[] $($func)+),
-		}
-	}};
-
-	(Vec2i $v:expr, $($func:tt)+) => {{
-		let v = $v;
-		Vec2i {
-			x: internal_vec_map!(@apply (v, x), @[] $($func)+),
-			y: internal_vec_map!(@apply (v, y), @[] $($func)+),
-		}
-	}};
-
-	(Vec3i $v:expr, $($func:tt)+) => {{
-		let v = $v;
-		Vec3i {
-			x: internal_vec_map!(@apply (v, x), @[] $($func)+),
-			y: internal_vec_map!(@apply (v, y), @[] $($func)+),
-			z: internal_vec_map!(@apply (v, z), @[] $($func)+),
-		}
-	}};
-
-	(Vec3 $v:expr, $($func:tt)+) => {{
-		let v = $v;
-		Vec3 {
-			x: internal_vec_map!(@apply (v, x), @[] $($func)+),
-			y: internal_vec_map!(@apply (v, y), @[] $($func)+),
-			z: internal_vec_map!(@apply (v, z), @[] $($func)+),
-		}
-	}};
-
-	(Vec4 $v:expr, $($func:tt)+) => {{
-		let v = $v;
-		Vec4 {
-			x: internal_vec_map!(@apply (v, x), @[] $($func)+),
-			y: internal_vec_map!(@apply (v, y), @[] $($func)+),
-			z: internal_vec_map!(@apply (v, z), @[] $($func)+),
-			w: internal_vec_map!(@apply (v, w), @[] $($func)+),
-		}
-	}};
-}
-
-#[macro_export]
-macro_rules! vec2_map { ($($tt:tt)+) => { internal_vec_map!(Vec2 $($tt)+) } }
-
-#[macro_export]
-macro_rules! vec2i_map { ($($tt:tt)+) => { internal_vec_map!(Vec2i $($tt)+) } }
-
-#[macro_export]
-macro_rules! vec3i_map { ($($tt:tt)+) => { internal_vec_map!(Vec3i $($tt)+) } }
-
-#[macro_export]
-macro_rules! vec3_map { ($($tt:tt)+) => { internal_vec_map!(Vec3 $($tt)+) } }
-
-#[macro_export]
-macro_rules! vec4_map { ($($tt:tt)+) => { internal_vec_map!(Vec4 $($tt)+) } }
 
 macro_rules! impl_vector_bin_op {
 	($ty:ident, $trait:ident<$scalar:ty>, $fn:ident, $op:tt, $($els:ident),+) => {
@@ -147,6 +59,11 @@ macro_rules! impl_vector_bin_op {
 			}
 		}
 	};
+}
+
+
+macro_rules! repeat_for_each {
+    ( $each:tt, $with:tt ) => { $with };
 }
 
 macro_rules! bulk_impl_vector_ops {
@@ -216,6 +133,47 @@ macro_rules! bulk_impl_vector_ops {
 					.map($ty::from)
 			}
 		}
+
+		// Array conversions
+		impl From<$ty> for [$scalar; $size] {
+			fn from($ty { $($els),+ }: $ty) -> Self {
+				[$($els),+]
+			}
+		}
+
+		impl From<[$scalar; $size]> for $ty {
+			fn from([$($els),+]: [$scalar; $size]) -> Self {
+				$ty{ $($els),+ }
+			}
+		}
+
+		// Tuple conversions
+		impl From<$ty> for ( $(repeat_for_each!($els, $scalar)),+ ) {
+			fn from($ty { $($els),+ }: $ty) -> Self {
+				($($els),+)
+			}
+		}
+
+		impl From<( $(repeat_for_each!($els, $scalar)),+ )> for $ty {
+			fn from(($($els),+): ( $(repeat_for_each!($els, $scalar)),+ )) -> Self {
+				$ty { $($els),+ }
+			}
+		}
+
+		// Reference conversions
+		impl AsRef<[$scalar; $size]> for $ty {
+			fn as_ref(&self) -> &[$scalar; $size] {
+				// SAFETY: repr(C) guarantees the layout is compatible
+				unsafe { std::mem::transmute(self) }
+			}
+		}
+
+		impl AsMut<[$scalar; $size]> for $ty {
+			fn as_mut(&mut self) -> &mut [$scalar; $size] {
+				// SAFETY: repr(C) guarantees the layout is compatible
+				unsafe { std::mem::transmute(self) }
+			}
+		}
 	};
 }
 
@@ -240,3 +198,34 @@ macro_rules! impl_lerp_for_vec {
 impl_lerp_for_vec!(Vec2, x, y);
 impl_lerp_for_vec!(Vec3, x, y, z);
 impl_lerp_for_vec!(Vec4, x, y, z, w);
+
+
+// mint interop
+macro_rules! impl_mint_interop {
+	($ty:ty, $mint_ty:ty, $array:ty) => {
+		#[cfg(feature="interop")]
+		impl mint::IntoMint for $ty {
+			type MintType = $mint_ty;
+		}
+
+		#[cfg(feature="interop")]
+		impl From<$mint_ty> for $ty {
+			fn from(o: $mint_ty) -> Self {
+				<$array>::from(o).into()
+			}
+		}
+
+		#[cfg(feature="interop")]
+		impl From<$ty> for $mint_ty {
+			fn from(o: $ty) -> Self {
+				<$array>::from(o).into()
+			}
+		}
+	}
+}
+
+impl_mint_interop!(Vec2, mint::Vector2<f32>, [f32; 2]);
+impl_mint_interop!(Vec3, mint::Vector3<f32>, [f32; 3]);
+impl_mint_interop!(Vec4, mint::Vector4<f32>, [f32; 4]);
+impl_mint_interop!(Vec2i, mint::Vector2<i32>, [i32; 2]);
+impl_mint_interop!(Vec3i, mint::Vector3<i32>, [i32; 3]);

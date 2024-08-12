@@ -68,6 +68,14 @@ impl Color {
 		Color::hsva(h,s,v, 1.0)
 	}
 
+	pub fn from_slice(s: &[f32]) -> Color {
+		match s {
+			&[r, g, b] => Color::rgb(r, g, b),
+			&[r, g, b, a, ..] => Color::rgba(r, g, b, a),
+			_ => panic!("Not enough elements supplied to Color::from_slice"),
+		}
+	}
+
 	pub const fn grey(v: f32) -> Color { Color::rgb(v, v, v) }
 	pub const fn grey_a(v: f32, a: f32) -> Color { Color::rgba(v, v, v, a) }
 	pub const fn white() -> Color { Color::grey(1.0) }

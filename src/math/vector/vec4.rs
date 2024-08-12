@@ -40,21 +40,3 @@ impl Vec4 {
 	pub fn dot(&self, o: Vec4) -> f32 { self.x*o.x + self.y*o.y + self.z*o.z + self.w*o.w }
 }
 
-
-impl From<[f32; 4]> for Vec4 {
-	fn from([x, y, z, w]: [f32; 4]) -> Vec4 { Vec4{x, y, z, w} }
-}
-
-impl From<(f32, f32, f32, f32)> for Vec4 {
-	fn from((x, y, z, w): (f32, f32, f32, f32)) -> Vec4 { Vec4{x, y, z, w} }
-}
-
-
-
-impl From<Vec4> for [f32; 4] {
-	fn from(o: Vec4) -> [f32; 4] { o.to_array() }
-}
-
-impl From<Vec4> for (f32, f32, f32, f32) {
-	fn from(o: Vec4) -> (f32, f32, f32, f32) { o.to_tuple() }
-}
