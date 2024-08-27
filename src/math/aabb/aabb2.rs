@@ -37,6 +37,11 @@ impl Aabb2 {
 	pub fn around_point(center: Vec2, extents: Vec2) -> Aabb2 {
 		Aabb2::new(center - extents, center + extents)
 	}
+
+	pub fn from_points(points: &[Vec2]) -> Aabb2 {
+		points.iter()
+			.fold(Aabb2::empty(), |bounds, &point| bounds.expand_to_include_point(point))
+	}
 }
 
 /// Properties
@@ -116,6 +121,13 @@ impl Aabb2 {
 		Aabb2 {
 			min: self.min + amount,
 			max: self.max + amount,
+		}
+	}
+
+	pub fn expand_to_include_point(&self, point: Vec2) -> Self {
+		Aabb2 {
+			min: Vec2::new(self.min.x.min(point.x), self.min.y.min(point.y)),
+			max: Vec2::new(self.max.x.max(point.x), self.max.y.max(point.y)),
 		}
 	}
 
