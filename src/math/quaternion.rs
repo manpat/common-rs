@@ -6,64 +6,60 @@ use std::f32::consts::PI;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Quat {
-	pub x: f32,
-	pub y: f32,
-	pub z: f32,
-	pub w: f32,
+	pub imaginary: Vec3,
+	pub real: f32,
 }
 
 impl Quat {
-	pub const fn from_raw(x: f32, y: f32, z: f32, w: f32) -> Quat {
-		Quat{x,y,z,w}
+	pub const fn new(real: f32, imaginary: Vec3) -> Quat {
+		Quat{real, imaginary}
+	}
+
+	pub const fn from_imaginary(imaginary: Vec3) -> Quat {
+		Quat::new(0.0, imaginary)
 	}
 
 	pub const fn identity() -> Quat {
-		Quat::from_raw(0.0, 0.0, 0.0, 1.0)
+		Quat::new(1.0, Vec3::zero())
 	}
 
-	pub fn new(axis: Vec3, angle: f32) -> Quat {
+	pub fn from_axis_angle(axis: Vec3, angle: f32) -> Quat {
 		let angle = angle / 2.0;
-		let s = angle.sin();
 
-		Quat::from_raw(
-			axis.x * s,
-			axis.y * s,
-			axis.z * s,
-			angle.cos()
+		Quat::new(
+			angle.cos(),
+			axis * angle.sin(),
 		)
 	}
 
 	pub fn from_pitch(pitch: f32) -> Quat {
-		Quat::new(Vec3::from_x(1.0), pitch)
+		Quat::from_axis_angle(Vec3::from_x(1.0), pitch)
 	}
 
 	pub fn from_yaw(yaw: f32) -> Quat {
-		Quat::new(Vec3::from_y(1.0), yaw)
+		Quat::from_axis_angle(Vec3::from_y(1.0), yaw)
 	}
 
 	pub fn from_roll(roll: f32) -> Quat {
-		Quat::new(Vec3::from_z(1.0), roll)
+		Quat::from_axis_angle(Vec3::from_z(1.0), roll)
 	}
 
-	pub fn forward(&self) -> Vec3 { *self * Vec3::from_z(-1.0) }
+	pub fn forward(&self) -> Vec3 { -self.backward() }
+	pub fn backward(&self) -> Vec3 { *self * Vec3::from_z(1.0) }
 	pub fn right(&self) -> Vec3 { *self * Vec3::from_x(1.0) }
 	pub fn up(&self) -> Vec3 { *self * Vec3::from_y(1.0) }
 
-	pub fn imaginary(&self) -> Vec3 {
-		Vec3::new(self.x, self.y, self.z)
-	}
-
 	pub fn magnitude(&self) -> f32 {
-		(self.x*self.x + self.y*self.y + self.z*self.z + self.w*self.w).sqrt()
+		(self.imaginary.square_length() + self.real*self.real).sqrt()
 	}
 
 	pub fn normalize(&self) -> Quat {
 		let m = self.magnitude();
-		Quat::from_raw(self.x/m, self.y/m, self.z/m, self.w/m)
+		Quat::new(self.real/m, self.imaginary/m)
 	}
 
 	pub fn conjugate(&self) -> Quat {
-		Quat::from_raw(-self.x, -self.y, -self.z, self.w)
+		Quat::new(self.real, -self.imaginary)
 	}
 
 	pub fn scale(&self, f: f32) -> Quat {
@@ -72,39 +68,38 @@ impl Quat {
 	}
 
 	pub fn to_mat4(&self) -> Mat4 {
-		Mat4::from_columns([
-			(*self * Vec3::new(1.0, 0.0, 0.0)).extend(0.0),
-			(*self * Vec3::new(0.0, 1.0, 0.0)).extend(0.0),
-			(*self * Vec3::new(0.0, 0.0, 1.0)).extend(0.0),
-			Vec4::from_w(1.0)
-		])
+		self.to_mat3x4().to_mat4()
 	}
 
 	pub fn to_mat3x4(&self) -> Mat3x4 {
+		// TODO(pat.m): this could be _much_ more efficient
 		Mat3x4::from_columns([
-			*self * Vec3::new(1.0, 0.0, 0.0),
-			*self * Vec3::new(0.0, 1.0, 0.0),
-			*self * Vec3::new(0.0, 0.0, 1.0),
-			Vec3::splat(0.0),
+			self.right(),
+			self.up(),
+			self.backward(),
+			Vec3::zero(),
 		])
 	}
 
 	// Stolen and adjusted from https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 	// TODO: test these!
 	pub fn yaw(&self) -> f32 {
-		let siny_cosp = 2.0 * (self.w * self.y + self.z * self.x);
-		let cosy_cosp = 1.0 - 2.0 * (self.x * self.x + self.y * self.y);
+		let Vec3{x, y, z} = self.imaginary;
+		let siny_cosp = 2.0 * (self.real * y + z * x);
+		let cosy_cosp = 1.0 - 2.0 * (x * x + y * y);
 		siny_cosp.atan2(cosy_cosp)
 	}
 
 	pub fn roll(&self) -> f32 {
-		let sinr_cosp = 2.0 * (self.w * self.z + self.x * self.y);
-		let cosr_cosp = 1.0 - 2.0 * (self.z * self.z + self.x * self.x);
+		let Vec3{x, y, z} = self.imaginary;
+		let sinr_cosp = 2.0 * (self.real * z + x * y);
+		let cosr_cosp = 1.0 - 2.0 * (x * x + z * z);
 		sinr_cosp.atan2(cosr_cosp)
 	}
 
 	pub fn pitch(&self) -> f32 {
-		let sinp = 2.0 * (self.w * self.x - self.y * self.z);
+		let Vec3{x, y, z} = self.imaginary;
+		let sinp = 2.0 * (self.real * x - y * z);
 		if sinp.abs() >= 1.0 {
 			(PI / 2.0).copysign(sinp) // use 90 degrees if out of range
 		} else {
@@ -117,7 +112,7 @@ impl Quat {
 impl Add<Quat> for Quat {
 	type Output = Quat;
 	fn add(self, o: Quat) -> Quat {
-		Quat::from_raw(self.x+o.x, self.y+o.y, self.z+o.z, self.w+o.w)
+		Quat::new(self.real+o.real, self.imaginary+o.imaginary)
 	}
 }
 
@@ -125,11 +120,10 @@ impl Add<Quat> for Quat {
 impl Mul<Quat> for Quat {
 	type Output = Quat;
 	fn mul(self, o: Quat) -> Quat {
-		Quat::from_raw(
-			 self.w*o.x - self.z*o.y + self.y*o.z + self.x*o.w,
-			 self.z*o.x + self.w*o.y - self.x*o.z + self.y*o.w,
-			-self.y*o.x + self.x*o.y + self.w*o.z + self.z*o.w,
-			-self.x*o.x - self.y*o.y - self.z*o.z + self.w*o.w
+		// (s, u) (t, v) = (st - u.v, sv + tu + u x v)
+		Quat::new(
+			self.real*o.real - self.imaginary.dot(o.imaginary),
+			self.real * o.imaginary + o.real * self.imaginary + self.imaginary.cross(o.imaginary),
 		)
 	}
 }
@@ -137,28 +131,47 @@ impl Mul<Quat> for Quat {
 impl Mul<f32> for Quat {
 	type Output = Quat;
 	fn mul(self, o: f32) -> Quat {
-		Quat::from_raw(self.x*o, self.y*o, self.z*o, self.w*o)
+		Quat::new(self.real*o, self.imaginary*o)
 	}
 }
 
+// TODO(pat.m): maybe this shouldn't be on Mul, but just a regular function
 impl Mul<Vec3> for Quat {
 	type Output = Vec3;
-	fn mul(self, o: Vec3) -> Vec3 {
-		let q = Quat::from_raw(o.x, o.y, o.z, 0.0);
-		(self * q * self.conjugate()).imaginary()
+	fn mul(self, v: Vec3) -> Vec3 {
+		// TODO(pat.m): this can be simplified further
+
+		// This is a simplified form of (self * Quat::from_imaginary(v) * self.conjugate()).imaginary.
+		// This takes advantage of the zero real component of `v`, and the fact that
+		// the real component after multiplication by the conjugate will always be zero.
+		// NOTE: This assumes a unit quaternion.
+		let half_rotated = multiply_quat_vec3(&self, v);
+		quat_multiply_conjugate_discarding_real(&half_rotated, &self)
 	}
 }
 
+
+// Implements q * (0, v)
+fn multiply_quat_vec3(q: &Quat, v: Vec3) -> Quat {
+	// (s, u) (0, v) = (-u.v, sv + u x v)
+	Quat {
+		real: -q.imaginary.dot(v),
+		imaginary: q.real * v + q.imaginary.cross(v),
+	}
+}
+
+// Implements imaginary(a * conjugate(b))
+fn quat_multiply_conjugate_discarding_real(a: &Quat, b: &Quat) -> Vec3 {
+	b.real * a.imaginary - a.real * b.imaginary + a.imaginary.cross(-b.imaginary)
+}
 
 
 // TODO(pat.m): slerp?
 impl Lerp<Quat> for f32 {
 	fn lerp(self, start: Quat, end: Quat) -> Quat {
 		Quat {
-			x: self.lerp(start.x, end.x),
-			y: self.lerp(start.y, end.y),
-			z: self.lerp(start.z, end.z),
-			w: self.lerp(start.w, end.w),
+			imaginary: self.lerp(start.imaginary, end.imaginary),
+			real: self.lerp(start.real, end.real),
 		}
 	}
 }
@@ -169,7 +182,8 @@ impl serde::Serialize for Quat {
 	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
 		where S: serde::Serializer
 	{
-		[self.x, self.y, self.z, self.w].serialize(serializer)
+		let Vec3{x, y, z} = self.imaginary;
+		[x, y, z, self.real].serialize(serializer)
 	}
 }
 
@@ -179,7 +193,7 @@ impl<'de> serde::Deserialize<'de> for Quat {
 		where D: serde::Deserializer<'de>
 	{
 		<[f32; 4]>::deserialize(deserializer)
-			.map(|[x, y, z, w]| Quat::from_raw(x, y, z, w))
+			.map(|[x, y, z, real]| Quat::new(real, Vec3::new(x, y, z)))
 	}
 }
 

@@ -153,7 +153,7 @@ mod tests {
 		println!("A adj(A) = adj(A) A");
 		assert_almost_eq_mat(a_adj_a, a.adjugate() * a);
 
-		let det_a_i = Mat2::uniform_scale(det);
+		let det_a_i = Mat2::scale(det);
 		println!("det(A) I = {:?}", det_a_i);
 
 		println!("A adj(A) = det(A) I");

@@ -33,7 +33,8 @@ impl Vec3 {
 	pub fn to_xz(&self) -> Vec2 { Vec2::new(self.x, self.z) }
 	pub fn extend(&self, w: f32) -> Vec4 { Vec4::new(self.x, self.y, self.z, w) }
 
-	pub fn length(&self) -> f32 { self.dot(*self).sqrt() }
+	pub fn square_length(&self) -> f32 { self.dot(*self) }
+	pub fn length(&self) -> f32 { self.square_length().sqrt() }
 	pub fn normalize(&self) -> Vec3 { *self * (1.0/self.length()) }
 
 	pub fn dot(&self, o: Vec3) -> f32 { self.x*o.x + self.y*o.y + self.z*o.z }
