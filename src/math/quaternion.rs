@@ -21,9 +21,6 @@ impl Quat {
 		Quat::from_raw(0.0, 0.0, 0.0, 1.0)
 	}
 
-	#[deprecated]
-	pub const fn ident() -> Quat { Quat::identity() }
-
 	pub fn new(axis: Vec3, angle: f32) -> Quat {
 		let angle = angle / 2.0;
 		let s = angle.sin();
