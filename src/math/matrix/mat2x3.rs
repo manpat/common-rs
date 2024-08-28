@@ -17,6 +17,8 @@ impl Mat2x3 {
 		}
 	}
 
+	pub fn identity() -> Mat2x3 { Mat2x3::scale(1.0) }
+
 	pub fn from_rows(rows: [Vec3; 2]) -> Mat2x3 { Mat2x3 { rows } }
 	pub fn from_columns(columns: [Vec2; 3]) -> Mat2x3 {
 		let [a, b, c] = columns;
@@ -41,9 +43,6 @@ impl Mat2x3 {
 			.to_mat4()
 	}
 
-	pub fn identity() -> Mat2x3 { Mat2x3::uniform_scale(1.0) }
-	pub fn uniform_scale(s: f32) -> Mat2x3 { Mat2x3::scale(Vec2::splat(s)) }
-
 	pub fn translate(t: Vec2) -> Mat2x3 {
 		Mat2x3::new([
 			1.0, 0.0, t.x,
@@ -51,10 +50,11 @@ impl Mat2x3 {
 		])
 	}
 
-	pub fn scale(s: Vec2) -> Mat2x3 { Mat2x3::scale_translate(s, Vec2::zero()) }
+	pub fn scale(s: impl ToVec2Scalar) -> Mat2x3 { Mat2x3::scale_translate(s, Vec2::zero()) }
 	pub fn rotate(ph: f32) -> Mat2x3 { Mat2x3::rotate_translate(ph, Vec2::zero()) }
 
-	pub fn scale_translate(s: Vec2, t: Vec2) -> Mat2x3 {
+	pub fn scale_translate(s: impl ToVec2Scalar, t: Vec2) -> Mat2x3 {
+		let s = s.to_vec2();
 		Mat2x3::new([
 			s.x, 0.0, t.x,
 			0.0, s.y, t.y,
@@ -69,7 +69,8 @@ impl Mat2x3 {
 		])
 	}
 
-	pub fn scale_rotate_translate(s: Vec2, ph: f32, t: Vec2) -> Mat2x3 {
+	pub fn scale_rotate_translate(s: impl ToVec2Scalar, ph: f32, t: Vec2) -> Mat2x3 {
+		let s = s.to_vec2();
 		let (rx, ry) = (ph.cos(), ph.sin());
 		Mat2x3::new([
 			s.x*rx, s.y*-ry, t.x,

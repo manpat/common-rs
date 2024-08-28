@@ -31,8 +31,7 @@ impl Mat3x4 {
 		])
 	}
 
-	pub fn identity() -> Mat3x4 { Mat3x4::uniform_scale(1.0) }
-	pub fn uniform_scale(s: f32) -> Mat3x4 { Mat3x4::scale(Vec3::new(s,s,s)) }
+	pub fn identity() -> Mat3x4 { Mat3x4::scale(1.0) }
 
 	pub fn translate(t: Vec3) -> Mat3x4 {
 		Mat3x4::new(&[
@@ -42,7 +41,8 @@ impl Mat3x4 {
 		])
 	}
 
-	pub fn scale_translate(s: Vec3, t: Vec3) -> Mat3x4 {
+	pub fn scale_translate(s: impl ToVec3Scalar, t: Vec3) -> Mat3x4 {
+		let s = s.to_vec3();
 		Mat3x4::new(&[
 			s.x, 0.0, 0.0, t.x,
 			0.0, s.y, 0.0, t.y, 
@@ -78,7 +78,7 @@ impl Mat3x4 {
 		])
 	}
 
-	pub fn scale(s: Vec3) -> Mat3x4 {
+	pub fn scale(s: impl ToVec3Scalar) -> Mat3x4 {
 		Mat3x4::scale_translate(s, Vec3::zero())
 	}
 

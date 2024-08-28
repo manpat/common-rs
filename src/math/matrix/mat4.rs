@@ -26,31 +26,19 @@ impl Mat4 {
 		Mat4::from_rows(columns).transpose()
 	}
 
-	#[deprecated]
-	pub fn ident() -> Mat4 { Mat4::identity() }
-	pub fn identity() -> Mat4 { Mat4::uniform_scale(1.0) }
-	pub fn uniform_scale(s: f32) -> Mat4 { Mat4::scale(Vec3::new(s,s,s)) }
+	pub fn identity() -> Mat4 { Mat4::scale(1.0) }
 
 	pub fn translate(t: Vec3) -> Mat4 { Mat3x4::translate(t).to_mat4() }
-	pub fn scale(s: Vec3) -> Mat4 { Mat3x4::scale(s).to_mat4() }
+	pub fn scale(s: impl ToVec3Scalar) -> Mat4 { Mat3x4::scale(s).to_mat4() }
 
 	pub fn rotate_x(ph: f32) -> Mat4 { Mat3x4::rotate_x(ph).to_mat4() }
 	pub fn rotate_y(ph: f32) -> Mat4 { Mat3x4::rotate_y(ph).to_mat4() }
 	pub fn rotate_z(ph: f32) -> Mat4 { Mat3x4::rotate_z(ph).to_mat4() }
 
-	pub fn scale_translate(s: Vec3, t: Vec3) -> Mat4 { Mat3x4::scale_translate(s, t).to_mat4() }
+	pub fn scale_translate(s: impl ToVec3Scalar, t: Vec3) -> Mat4 { Mat3x4::scale_translate(s, t).to_mat4() }
 	pub fn rotate_x_translate(ph: f32, t: Vec3) -> Mat4 { Mat3x4::rotate_x_translate(ph, t).to_mat4() }
 	pub fn rotate_y_translate(ph: f32, t: Vec3) -> Mat4 { Mat3x4::rotate_y_translate(ph, t).to_mat4() }
 	pub fn rotate_z_translate(ph: f32, t: Vec3) -> Mat4 { Mat3x4::rotate_z_translate(ph, t).to_mat4() }
-
-	#[deprecated]
-	pub fn xrot(ph: f32) -> Mat4 { Mat3x4::rotate_x(ph).to_mat4() }
-
-	#[deprecated]
-	pub fn yrot(ph: f32) -> Mat4 { Mat3x4::rotate_y(ph).to_mat4() }
-
-	#[deprecated]
-	pub fn zrot(ph: f32) -> Mat4 { Mat3x4::rotate_z(ph).to_mat4() }
 
 	pub fn to_mat3x4(&self) -> Mat3x4 {
 		let [a,b,c,_] = self.rows;

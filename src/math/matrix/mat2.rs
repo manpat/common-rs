@@ -21,10 +21,10 @@ impl Mat2 {
 		Mat2::from_rows(columns).transpose()
 	}
 
-	pub fn identity() -> Mat2 { Mat2::uniform_scale(1.0) }
-	pub fn uniform_scale(s: f32) -> Mat2 { Mat2::scale(Vec2::splat(s)) }
+	pub fn identity() -> Mat2 { Mat2::scale(1.0) }
 
-	pub fn scale(s: Vec2) -> Mat2 {
+	pub fn scale(s: impl ToVec2Scalar) -> Mat2 {
+		let s = s.to_vec2();
 		Mat2::new([
 			s.x, 0.0,
 			0.0, s.y,
@@ -38,9 +38,6 @@ impl Mat2 {
 			ry,  rx,
 		])
 	}
-
-	#[deprecated]
-	pub fn rot(ph: f32) -> Mat2 { Mat2::rotate(ph) }
 
 	pub fn transpose(&self) -> Mat2 {
 		let [Vec2{x: a, y: b}, Vec2{x: c, y: d}] = self.rows;
@@ -133,7 +130,7 @@ mod tests {
 
 	fn assert_almost_eq_mat(a: Mat2, b: Mat2) {
 		assert_almost_eq_vec(a.rows[0], b.rows[0]);
-		assert_almost_eq_vec(a.rows[1], b.rows[1]);		
+		assert_almost_eq_vec(a.rows[1], b.rows[1]);	
 	}
 
 	#[test]

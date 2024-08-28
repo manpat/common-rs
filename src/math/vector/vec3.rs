@@ -45,3 +45,17 @@ impl Vec3 {
 		)
 	}
 }
+
+
+
+pub trait ToVec3Scalar {
+	fn to_vec3(&self) -> Vec3;
+}
+
+impl ToVec3Scalar for Vec3 {
+	fn to_vec3(&self) -> Vec3 { *self }
+}
+
+impl ToVec3Scalar for f32 {
+	fn to_vec3(&self) -> Vec3 { Vec3::splat(*self) }
+}

@@ -62,3 +62,18 @@ impl Vec2 {
 		Vec2::new(self.y, self.x)
 	}
 }
+
+
+
+
+pub trait ToVec2Scalar {
+	fn to_vec2(&self) -> Vec2;
+}
+
+impl ToVec2Scalar for Vec2 {
+	fn to_vec2(&self) -> Vec2 { *self }
+}
+
+impl ToVec2Scalar for f32 {
+	fn to_vec2(&self) -> Vec2 { Vec2::splat(*self) }
+}

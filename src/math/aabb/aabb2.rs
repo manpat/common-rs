@@ -1,4 +1,4 @@
-use crate::math::vector::Vec2;
+use crate::{Vec2, ToVec2Scalar};
 
 /// A Closed 2D Range - that is min and max count as being inside the bounds of the Aabb2
 #[derive(Debug, Copy, Clone)]
@@ -14,11 +14,6 @@ impl Aabb2 {
 		Aabb2 { min, max }
 	}
 
-	#[deprecated="Use Aabb2::empty instead"]
-	pub fn new_empty() -> Aabb2 {
-		Self::empty()
-	}
-
 	pub fn empty() -> Aabb2 {
 		Aabb2::new(
 			Vec2::splat(f32::INFINITY),
@@ -27,20 +22,25 @@ impl Aabb2 {
 	}
 
 	pub fn zero() -> Aabb2 {
-		Aabb2::point(Vec2::zero())
+		Aabb2::from_point(Vec2::zero())
 	}
 
-	pub fn point(center: Vec2) -> Aabb2 {
-		Aabb2::new(center, center)
-	}
-
-	pub fn around_point(center: Vec2, extents: Vec2) -> Aabb2 {
+	pub fn from_center_extents(center: Vec2, extents: impl ToVec2Scalar) -> Aabb2 {
+		let extents = extents.to_vec2();
 		Aabb2::new(center - extents, center + extents)
+	}
+
+	pub fn from_min_size(min: Vec2, size: impl ToVec2Scalar) -> Aabb2 {
+		Aabb2::new(min, min + size.to_vec2())
+	}
+
+	pub fn from_point(center: Vec2) -> Aabb2 {
+		Aabb2::new(center, center)
 	}
 
 	pub fn from_points(points: &[Vec2]) -> Aabb2 {
 		points.iter()
-			.fold(Aabb2::empty(), |bounds, &point| bounds.expand_to_include_point(point))
+			.fold(Aabb2::empty(), |bounds, &point| bounds.include_point(point))
 	}
 }
 
@@ -104,34 +104,37 @@ impl Aabb2 {
 	}
 }
 
+
 /// Modifications
 impl Aabb2 {
-	pub fn grow(&self, amount: Vec2) -> Self {
+	pub fn grow(&self, amount: impl ToVec2Scalar) -> Self {
+		let amount = amount.to_vec2();
 		Aabb2 {
 			min: self.min - amount,
 			max: self.max + amount,
 		}
 	}
 
-	pub fn shrink(&self, amount: Vec2) -> Self {
-		self.grow(-amount)
+	pub fn shrink(&self, amount: impl ToVec2Scalar) -> Self {
+		self.grow(-amount.to_vec2())
 	}
 
-	pub fn translate(&self, amount: Vec2) -> Self {
+	pub fn translate(&self, amount: impl ToVec2Scalar) -> Self {
+		let amount = amount.to_vec2();
 		Aabb2 {
 			min: self.min + amount,
 			max: self.max + amount,
 		}
 	}
 
-	pub fn expand_to_include_point(&self, point: Vec2) -> Self {
+	pub fn include_point(&self, point: Vec2) -> Self {
 		Aabb2 {
 			min: Vec2::new(self.min.x.min(point.x), self.min.y.min(point.y)),
 			max: Vec2::new(self.max.x.max(point.x), self.max.y.max(point.y)),
 		}
 	}
 
-	pub fn expand_to_include_rect(&self, other: Aabb2) -> Self {
+	pub fn include_rect(&self, other: Aabb2) -> Self {
 		Aabb2 {
 			min: Vec2::new(self.min.x.min(other.min.x), self.min.y.min(other.min.y)),
 			max: Vec2::new(self.max.x.max(other.max.x), self.max.y.max(other.max.y)),
