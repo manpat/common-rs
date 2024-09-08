@@ -162,6 +162,8 @@ fn multiply_quat_vec3(q: &Quat, v: Vec3) -> Quat {
 
 // Implements imaginary(a * conjugate(b))
 fn quat_multiply_conjugate_discarding_real(a: &Quat, b: &Quat) -> Vec3 {
+	// (r, u) (s, v) = (rs - u.v, rv + su + u x v)
+	// im((r, u) (s, -v)) = rv - su - u x v
 	b.real * a.imaginary - a.real * b.imaginary + a.imaginary.cross(-b.imaginary)
 }
 

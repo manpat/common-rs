@@ -45,6 +45,7 @@ impl Vec2 {
 	pub fn to_array(self) -> [f32; 2] { [self.x, self.y] }
 	pub fn to_angle(self) -> f32 { self.y.atan2(self.x) }
 
+	pub fn square_length(self) -> f32 { self.dot(self) }
 	pub fn length(self) -> f32 { self.dot(self).sqrt() }
 
 	/// CCW 90° rotate
