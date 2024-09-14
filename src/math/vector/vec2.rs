@@ -35,6 +35,9 @@ impl Vec2 {
 	#[deprecated = "Use to_x0y instead. This name makes no sense."]
 	pub fn to_x0z(self) -> Vec3 { Vec3::new(self.x, 0.0, self.y) }
 
+	pub fn to_x0(self) -> Vec2 { Vec2::new(self.x, 0.0) }
+	pub fn to_0y(self) -> Vec2 { Vec2::new(0.0, self.y) }
+
 	pub fn to_x0y(self) -> Vec3 { Vec3::new(self.x, 0.0, self.y) }
 	pub fn to_xny(self, n: f32) -> Vec3 { Vec3::new(self.x, n, self.y) }
 	pub fn to_xyn(self, n: f32) -> Vec3 { Vec3::new(self.x, self.y, n) }
