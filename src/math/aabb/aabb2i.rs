@@ -89,5 +89,13 @@ impl Aabb2i {
 	pub fn shrink(&self, amount: Vec2i) -> Self {
 		self.grow(-amount)
 	}
+
+	// TODO(pat.m): include or exclude upper bound point?
+	pub fn include_point(&self, point: Vec2i) -> Self {
+		Aabb2i {
+			lower: Vec2i::new(self.lower.x.min(point.x), self.lower.y.min(point.y)),
+			upper: Vec2i::new(self.upper.x.max(point.x), self.upper.y.max(point.y)),
+		}
+	}
 }
 
