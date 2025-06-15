@@ -1,5 +1,6 @@
 use crate::vector::{Vec2, Vec3, Vec4};
 
+/// Represents a 3D plane of the form `normal . xyz - distance = 0`
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct Plane3 {
@@ -46,6 +47,7 @@ impl Plane3 {
 }
 
 
+/// Represents a 2D plane of the form `normal . xyz - distance = 0`
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct Plane2 {
