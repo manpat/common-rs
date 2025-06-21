@@ -1,9 +1,9 @@
 [package]
 name = "common"
 version = "0.5.0"
-edition = "2021"
+edition = "2024"
 authors = ["Patrick Monaghan <0x5f.manpat@gmail.com>"]
-rust-version = "1.83"
+rust-version = "1.85"
 
 [dependencies]
 rand = "0.9"
